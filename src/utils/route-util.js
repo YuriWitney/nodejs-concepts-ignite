@@ -1,9 +1,27 @@
-function isNewUserAlreadyExists(usersArray, username) {
+function findUserByUsername(usersArray, username) {
   const result = usersArray.filter( user =>
     user.username === username
   )
 
-  return result[0]?.username !== undefined
+  return result[0]
 }
 
-module.exports = isNewUserAlreadyExists
+function isUserFound(users, username) {
+  const user = findUserByUsername(users, username)
+  return user !== undefined
+}
+
+function setGMT(date) {
+  return date.setHours( date.getHours() -3)
+}
+
+function toBrazillianStandardTime(date) {
+  return new Date(setGMT(date)).toISOString()
+}
+
+
+module.exports = { 
+  findUserByUsername, 
+  isUserFound,
+  toBrazillianStandardTime
+}

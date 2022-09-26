@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const createUser = require('../src/utils/route-helper')
-const isNewUserAlreadyExists = require('../src/utils/route-util')
+const { v4: uuidv4 } = require('uuid');
+const { findUserByUsername, isUserFound, toBrazillianStandardTime } = require('../src/utils/route-util')
 
 const app = express();
 
@@ -11,29 +12,51 @@ app.use(express.json());
 const users = [];
 
 function checksExistsUserAccount(request, response, next) {
-  // Complete aqui
+  if(isUserFound(users, request.headers.username)) {
+    const user = findUserByUsername(users, request.headers.username)
+    request.user = user
+    return next()
+  }
+
+  return response
+    .status(404)
+    .json({ error: 'Usuário não encontrado!' })
 }
 
 app.post('/users', (request, response) => {
-  if(isNewUserAlreadyExists(users, request.body.username)) {
-    response.status(400).send({ error: 'Usuário já existe!' })
-    return
+  if(isUserFound(users, request.body.username)) {
+    return response
+      .status(400)
+      .json({ error: 'Usuário já existe!' })
   }
   
   const newUser = createUser(request.body)
-
   users.push(newUser)
-  response
+  
+  return response
     .status(201)
-    .send(newUser)
+    .json(newUser)
 });
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  return response
+    .status(200)
+    .json(request.user.todos)
 });
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const todo = {
+    title: request.body.title,
+    deadline: new Date(request.body.deadline),
+    id: uuidv4(),
+    done: false,
+    created_at: toBrazillianStandardTime(new Date())
+  
+  }
+  request.user.todos.push(todo)
+  return response
+    .status(201)
+    .json(todo)
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
