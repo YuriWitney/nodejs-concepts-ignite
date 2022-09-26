@@ -19,6 +19,7 @@ function toBrazillianStandardTime(date) {
   return new Date(setGMT(date)).toISOString()
 }
 
+
 function updateTodo(request, id) {
   for (const todo of request.user.todos) {
     if(todo.id === id) {
