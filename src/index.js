@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const createUser = require('../src/utils/route-helper')
+const { createUser, createTodo } = require('../src/utils/route-helper')
 const { v4: uuidv4 } = require('uuid');
-const { findUserByUsername, isUserFound, toBrazillianStandardTime } = require('../src/utils/route-util')
+const { findUserByUsername, isUserFound } = require('../src/utils/route-util')
 
 const app = express();
 
@@ -45,15 +45,10 @@ app.get('/todos', checksExistsUserAccount, (request, response) => {
 });
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
-  const todo = {
-    title: request.body.title,
-    deadline: new Date(request.body.deadline),
-    id: uuidv4(),
-    done: false,
-    created_at: toBrazillianStandardTime(new Date())
+  const todo = createTodo(request)
   
-  }
   request.user.todos.push(todo)
+
   return response
     .status(201)
     .json(todo)
