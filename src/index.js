@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const createUser = require('../src/utils/route-helper')
-const isUserAlreadyExists = require('../src/utils/route-util')
+const isNewUserAlreadyExists = require('../src/utils/route-util')
 
 const app = express();
 
@@ -15,7 +15,7 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 app.post('/users', (request, response) => {
-  if(isUserAlreadyExists(users, request.body.username)) {
+  if(isNewUserAlreadyExists(users, request.body.username)) {
     response.status(400).send({ error: 'Usuário já existe!' })
     return
   }

@@ -1,4 +1,4 @@
-function isUserAlreadyExists(usersArray, username) {
+function isNewUserAlreadyExists(usersArray, username) {
   const result = usersArray.filter( user =>
     user.username === username
   )
@@ -6,4 +6,4 @@ function isUserAlreadyExists(usersArray, username) {
   return result[0]?.username !== undefined
 }
 
-module.exports = isUserAlreadyExists
+module.exports = isNewUserAlreadyExists
