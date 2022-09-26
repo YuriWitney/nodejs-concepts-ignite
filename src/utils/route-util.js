@@ -19,9 +19,21 @@ function toBrazillianStandardTime(date) {
   return new Date(setGMT(date)).toISOString()
 }
 
+function updateTodo(request, id) {
+  for (const todo of request.user.todos) {
+    if(todo.id === id) {
+      todo.title = request.body.title
+      todo.deadline = new Date(request.body.deadline)
+
+      return todo
+    }
+  }
+}
+
 
 module.exports = { 
   findUserByUsername, 
   isUserFound,
-  toBrazillianStandardTime
+  toBrazillianStandardTime,
+  updateTodo
 }

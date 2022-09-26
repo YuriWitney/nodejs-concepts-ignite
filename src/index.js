@@ -1,8 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { createUser, createTodo } = require('../src/utils/route-helper')
-const { v4: uuidv4 } = require('uuid');
-const { findUserByUsername, isUserFound } = require('../src/utils/route-util')
+const { findUserByUsername, isUserFound, updateTodo } = require('../src/utils/route-util')
 
 const app = express();
 
@@ -14,6 +13,7 @@ const users = [];
 function checksExistsUserAccount(request, response, next) {
   if(isUserFound(users, request.headers.username)) {
     const user = findUserByUsername(users, request.headers.username)
+    
     request.user = user
     return next()
   }
@@ -46,7 +46,7 @@ app.get('/todos', checksExistsUserAccount, (request, response) => {
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
   const todo = createTodo(request)
-  
+
   request.user.todos.push(todo)
 
   return response
@@ -55,7 +55,13 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const todoId = request.params.id
+
+  let todoUpdated = updateTodo(request, todoId)
+
+  return response
+    .status(200)
+    .json(todoUpdated)
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
