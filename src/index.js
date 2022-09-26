@@ -16,13 +16,13 @@ function checksExistsUserAccount(request, response, next) {
 
 app.post('/users', (request, response) => {
   if(isUserAlreadyExists(users, request.body.username)) {
-    res.status(400).send({ error: 'Usuário já existe!' })
+    response.status(400).send({ error: 'Usuário já existe!' })
+    return
   }
   
   const newUser = createUser(request.body)
 
   users.push(newUser)
-  console.log(users)
   response
     .status(201)
     .send(newUser)

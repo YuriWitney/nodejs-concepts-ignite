@@ -3,7 +3,7 @@ function isUserAlreadyExists(usersArray, username) {
     user.username === username
   )
 
-  return result === []
+  return result[0]?.username !== undefined
 }
 
 module.exports = isUserAlreadyExists
