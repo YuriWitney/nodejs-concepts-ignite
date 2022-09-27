@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { createUser, createTodo } = require('../src/utils/route-helper')
-const { findUserByUsername, isUserFound, updateTodo } = require('../src/utils/route-util')
+const { findUserByUsername, isUserFound, updateTodo, setTodoDone } = require('../src/utils/route-util')
 
 const app = express();
 
@@ -70,7 +70,23 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const todoId = request.params.id
+
+  let todoUpdated = setTodoDone(request, todoId)
+  if(todoUpdated === undefined) {
+    return response
+      .status(404)
+      .send({ error: 'Todo não encontrado!' })
+  }
+  if(todoUpdated === true) {
+    return response
+      .status(200)
+      .send({ message: 'Todo já concluído!' })
+  }
+
+  return response
+    .status(200)
+    .json(todoUpdated)
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {

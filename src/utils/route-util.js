@@ -31,10 +31,24 @@ function updateTodo(request, id) {
   }
 }
 
+function setTodoDone(request, id) {
+  for (const todo of request.user.todos) {
+    if(todo.id === id) {
+      if(todo.done === true) {
+        return true
+      }
+      todo.done = true
+
+      return todo
+    }
+  }
+}
+
 
 module.exports = { 
   findUserByUsername, 
   isUserFound,
   toBrazillianStandardTime,
-  updateTodo
+  updateTodo,
+  setTodoDone
 }
