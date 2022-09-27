@@ -58,6 +58,11 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   const todoId = request.params.id
 
   let todoUpdated = updateTodo(request, todoId)
+  if(todoUpdated === undefined) {
+    return response
+      .status(404)
+      .send({ error: 'Todo não encontrado!' })
+  }
 
   return response
     .status(200)
