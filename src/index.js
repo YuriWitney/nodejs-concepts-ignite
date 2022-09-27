@@ -100,7 +100,25 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const todoId = request.params.id
+  let deletedTodo
+
+  const todoIndex = request.user.todos.findIndex(todo => {
+    if(todo.id === todoId) {
+      deletedTodo = todo
+    }
+    return todo.id === todoId
+  });
+  if(todoIndex < 0) {
+    return response
+      .status(404)
+      .send({ error: 'Todo não encontrado!' })
+  }
+  request.user.todos.splice(todoIndex, 1)
+
+  return response
+    .status(204)
+    .json(deletedTodo)
 });
 
 module.exports = app;
