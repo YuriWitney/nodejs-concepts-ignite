@@ -19,7 +19,6 @@ function toBrazillianStandardTime(date) {
   return new Date(setGMT(date)).toISOString()
 }
 
-
 function updateTodo(request, id) {
   for (const todo of request.user.todos) {
     if(todo.id === id) {
@@ -48,8 +47,18 @@ function isTodoNotFound(todo) {
   return todo === undefined
 }
 
+function isTodoIndexNotFound(index) {
+  return index < 0
+}
+
 function isTodoAlreadyDone(todo) {
   return todo === true
+}
+
+function findTodoIndex(request, id) {
+  return request.user.todos.findIndex(todo => {
+    return todo.id === id
+  })
 }
 
 module.exports = { 
@@ -59,5 +68,7 @@ module.exports = {
   updateTodo,
   setTodoDone,
   isTodoAlreadyDone,
-  isTodoNotFound
+  isTodoNotFound,
+  findTodoIndex,
+  isTodoIndexNotFound
 }

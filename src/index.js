@@ -10,7 +10,9 @@ const {
   updateTodo, 
   setTodoDone,
   isTodoNotFound,
-  isTodoAlreadyDone 
+  isTodoAlreadyDone,
+  findTodoIndex,
+  isTodoIndexNotFound
 } = require('../src/utils/route-util')
 
 const app = express();
@@ -101,19 +103,14 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   const todoId = request.params.id
-  let deletedTodo
+  const todoIndex = findTodoIndex(request, todoId)
 
-  const todoIndex = request.user.todos.findIndex(todo => {
-    if(todo.id === todoId) {
-      deletedTodo = todo
-    }
-    return todo.id === todoId
-  });
-  if(todoIndex < 0) {
+  if(isTodoIndexNotFound(todoIndex)) {
     return response
       .status(404)
       .send({ error: 'Todo não encontrado!' })
   }
+  const deletedTodo = request.user.todos[todoIndex]
   request.user.todos.splice(todoIndex, 1)
 
   return response
