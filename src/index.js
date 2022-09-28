@@ -1,18 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const { 
-  createUser, 
-  createTodo 
+  createUser, createTodo,
+  userNotFound, userAlreadyExists,
+  resourceCreated, ok,
+  todoNotFound, resourceDeleted
 } = require('../src/utils/route-helper')
 const { 
-  findUserByUsername, 
-  isUserFound, 
-  updateTodo, 
-  setTodoDone,
-  isTodoNotFound,
-  isTodoAlreadyDone,
-  findTodoIndex,
-  isTodoIndexNotFound
+  findUserByUsername, isUserFound, 
+  updateTodo, setTodoDone,
+  isTodoNotFound, isTodoAlreadyDone,
+  findTodoIndex, isTodoIndexNotFound
 } = require('../src/utils/route-util')
 
 const app = express();
@@ -30,30 +28,22 @@ function checksExistsUserAccount(request, response, next) {
     return next()
   }
 
-  return response
-    .status(404)
-    .json({ error: 'Usuário não encontrado!' })
+  return userNotFound(response)
 }
 
 app.post('/users', (request, response) => {
   if(isUserFound(users, request.body.username)) {
-    return response
-      .status(400)
-      .json({ error: 'Usuário já existe!' })
+    return userAlreadyExists(response)
   }
   
   const newUser = createUser(request.body)
   users.push(newUser)
   
-  return response
-    .status(201)
-    .json(newUser)
+  return resourceCreated(response, newUser)
 });
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
-  return response
-    .status(200)
-    .json(request.user.todos)
+  return ok(response, request.user.todos)
 });
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
@@ -61,9 +51,7 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 
   request.user.todos.push(todo)
 
-  return response
-    .status(201)
-    .json(todo)
+  return resourceCreated(response, todo)
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
@@ -71,14 +59,10 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
 
   let todoUpdated = updateTodo(request, todoId)
   if(isTodoNotFound(todoUpdated)) {
-    return response
-      .status(404)
-      .send({ error: 'Todo não encontrado!' })
+    return todoNotFound(response)
   }
 
-  return response
-    .status(200)
-    .json(todoUpdated)
+  return ok(response, todoUpdated)
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
@@ -86,19 +70,13 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 
   let todoUpdated = setTodoDone(request, todoId)
   if(isTodoNotFound(todoUpdated)) {
-    return response
-      .status(404)
-      .send({ error: 'Todo não encontrado!' })
+    return todoNotFound(response)
   }
   if(isTodoAlreadyDone(todoUpdated)) {
-    return response
-      .status(200)
-      .send({ message: 'Todo já concluído!' })
+    return ok(response, { message: 'Todo já concluído!' })
   }
 
-  return response
-    .status(200)
-    .json(todoUpdated)
+  return ok(response, todoUpdated)
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
@@ -106,16 +84,12 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   const todoIndex = findTodoIndex(request, todoId)
 
   if(isTodoIndexNotFound(todoIndex)) {
-    return response
-      .status(404)
-      .send({ error: 'Todo não encontrado!' })
+    return todoNotFound(response)
   }
   const deletedTodo = request.user.todos[todoIndex]
   request.user.todos.splice(todoIndex, 1)
 
-  return response
-    .status(204)
-    .json(deletedTodo)
+  return resourceDeleted(response, deletedTodo)
 });
 
 module.exports = app;

@@ -20,7 +20,49 @@ function createTodo(request) {
   }
 }
 
+function userNotFound(response) {
+  return response
+    .status(404)
+    .json({ error: 'Usuário não encontrado!' })
+}
+
+function todoNotFound(response) {
+  return response
+    .status(404)
+    .json({ error: 'todo não encontrado!' })
+}
+
+function userAlreadyExists(response) {
+  return response
+    .status(400)
+    .json({ error: 'Usuário já existe!' })
+}
+
+function resourceCreated(response, resource) {
+  return response
+    .status(201)
+    .json(resource)
+}
+
+function ok(response, resource) {
+  return response
+    .status(200)
+    .json(resource)
+}
+
+function resourceDeleted(response, resource) {
+  return response
+    .status(204)
+    .json(resource)
+}
+
 module.exports = {
   createUser,
-  createTodo
+  createTodo,
+  userNotFound,
+  userAlreadyExists,
+  resourceCreated,
+  todoNotFound,
+  ok,
+  resourceDeleted
 }
